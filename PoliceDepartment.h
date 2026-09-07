@@ -13,17 +13,14 @@ public:
     PoliceDepartment();
     virtual ~PoliceDepartment();
 
-    // Component interface implementation
     void executeResponse() override;
     void print() const override;
     std::string getName() const override;
     
-    // Resource management (inherited from Component)
     void increaseResources(int amount) override;
     int getAllocatedResources() const override;
     ResourceType getResourceType() const override;
 
-    // PoliceDepartment-specific methods
     void deployVehicle();
     void returnVehicle();
     int getNumVehicles() const;

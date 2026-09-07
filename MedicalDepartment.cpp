@@ -11,18 +11,22 @@ void MedicalDepartment::executeResponse(){
     deployAmbulance();
 }
 
+// MedicalDepartment.cpp - Update print() method
 void MedicalDepartment::print() const{
     std::cout << "===================== MEDICAL RESPONSE =====================" << std::endl;
     std::cout << "The Cedars-Sinai Medical Center is responding to a medical alert" << std::endl;
-    std::cout << 10 - numAmbulances << "trucks have been deployed";
-    std::cout << std::endl;
+    std::cout << (15 - numAmbulances) << " ambulances have been deployed" << std::endl;  // Fixed spacing and wording
 }
+
 
 std::string MedicalDepartment::getName() const{
-    return getName();
+    return "Cedars-Sinai Medical Center";
 }
 
+
+
 void MedicalDepartment::increaseResources(int amount){
+    std::cout << "Resources are being returned back to the MEDICAL department after an emergency response" << std::endl;
     if(amount <= numAmbulances){
         for(int i = 0; i < amount; i++){
             returnAmbulance();
@@ -72,3 +76,4 @@ bool MedicalDepartment::allocateResources(ResourceType type, int amount){
 }
 
 void MedicalDepartment::releaseResources(ResourceType type, int amount){}
+

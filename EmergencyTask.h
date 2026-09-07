@@ -15,10 +15,18 @@ class EmergencyTask : public Component{
     public:
         EmergencyTask(std::string EmergencyType, Composite* R_provider, ResourceType);
         void increaseResources(ResourceType type, int amount);
-        void executeResponse();
+        void executeResponse() override;
         void releaseResources( int amount);
         int getAllocatedResources() const;
-        ResourceType getResourceType();
+        ResourceType getResourceType() const;
+        virtual void add(Component* component){}
+        virtual void remove(Component* component){}
+
+
+    
+    virtual std::string getName() const{return "";}
+    virtual void print() const{}
+    virtual void increaseResources(int amount){}
 };
 
 

@@ -18,11 +18,11 @@ void FireDepartment::executeResponse(){
 void FireDepartment::print() const{
     std::cout << "===================== FIRE RESPONSE =====================" << std::endl;
     std::cout << "The Los Angeles Fire Department is responding to a fire alert" << std::endl;
-    std::cout << 10 - numTrucks << "trucks have been deployed";
+    std::cout << (10 - numTrucks) << " trucks have been deployed" << std::endl;  // Dynamic calculation
 }
 
-
 void FireDepartment::increaseResources(int amount){
+    std::cout << "Resources are being returned back to the LAFD department after an emergency response" << std::endl;
     if(amount <= numTrucks){
         for(int i = 0; i < amount; i++){
             returnTruck();

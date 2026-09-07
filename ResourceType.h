@@ -1,6 +1,5 @@
 #ifndef RESOURCETYPE_H
-#define ResourceType_H
-
+#define RESOURCETYPE_H
 
 enum class ResourceType{
     FireTruck, PoliceCar, Ambulance, Personnel

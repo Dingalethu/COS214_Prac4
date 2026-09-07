@@ -30,8 +30,13 @@ void EmergencyTask::executeResponse(){
 
 
 void EmergencyTask::releaseResources(int amount){
+     if(amount > allocatedResources){
+        amount = allocatedResources;
+    }
     std::cout << "Situation has stabilized - " << amount << " resources are being sent back" << std::endl;
     resourceProvider->increaseResources(amount);
+    allocatedResources -= amount;
+
 }
 
 
@@ -40,6 +45,6 @@ int EmergencyTask::getAllocatedResources() const{
 }
 
 
-ResourceType EmergencyTask::getResourceType(){
+ResourceType EmergencyTask::getResourceType() const{
     return resourceType;
 }

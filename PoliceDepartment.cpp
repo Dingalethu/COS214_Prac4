@@ -7,14 +7,24 @@ PoliceDepartment::PoliceDepartment() : Composite("LAPD"){
 
 
 void PoliceDepartment::executeResponse(){
+    if(numVehicles >=5){
+        for(int i = 0; i < 5; i++){
+            deployVehicle();
+        }
+        std::cout << "LAPD dispatching police units to the scene" << std::endl;
+        return;
+    }
+
+    std::cout << "LAPD not responding due to lack of resources" << std::endl;
 }
 
 
 std::string PoliceDepartment::getName() const{
-    return getName();
+    return "LAPD";
 }
 
 void PoliceDepartment::increaseResources(int amount){
+    std::cout << "Resources are being returned back to the LAPD department after an emergency response" << std::endl;
     for(int i = 0; i < amount; i++){
         returnVehicle();
     }
@@ -28,7 +38,7 @@ int PoliceDepartment::getAllocatedResources() const{
 
 
 ResourceType PoliceDepartment::getResourceType() const{
-    return ResourceType::Ambulance;
+    return ResourceType::PoliceCar;
 }
 
 
@@ -53,7 +63,7 @@ int PoliceDepartment::getNumVehicles() const{
 
 
 bool PoliceDepartment::allocateResources(ResourceType type, int amount){
-    if(type != ResourceType::FireTruck){
+    if(type != ResourceType::PoliceCar){
         return false;
     }
 
@@ -69,6 +79,16 @@ bool PoliceDepartment::allocateResources(ResourceType type, int amount){
     return true;
 }
 
-void releaseResources(ResourceType type, int amount){
+void PoliceDepartment::print() const{
+    std::cout << "===================== POLICE RESPONSE =====================" << std::endl;
+    std::cout << "The Los Angeles Police Department is responding to a police alert" << std::endl;  // Fixed
+    std::cout << (200 - numVehicles) << " police cars have been deployed" << std::endl;  // Fixed
+}
+
+
+void PoliceDepartment::releaseResources(ResourceType type, int amount){
     // Must be implemented by the EmergencyTask
 }
+
+PoliceDepartment::~PoliceDepartment(){}
+
