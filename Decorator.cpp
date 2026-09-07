@@ -1,4 +1,6 @@
 #include "Decorator.h"
+#include "Component.h"
+#include <vector>
 
 Decorator::Decorator(Component* component)
     : component(component) {}
@@ -37,4 +39,14 @@ int Decorator::getAllocatedResources() const {
 
 ResourceType Decorator::getResourceType() const {
     return component->getResourceType();
+}
+
+
+
+void Decorator::collectChildrenInto(std::vector<Component*>& out) const{
+    component->collectChildrenInto(out);
+}
+    
+bool Decorator::isActive() const{
+    return component->isActive();
 }

@@ -1,12 +1,12 @@
-// Composite.h
 #ifndef COMPOSITE_H
 #define COMPOSITE_H
 
 #include "Component.h"
+#include "WorkIterator.h"
 #include <vector>
 #include <string>
 
-class Composite : public Component {
+class Composite : public Component{
 private:
     std::vector<Component*> children;
     std::string name;
@@ -27,12 +27,17 @@ public:
     int getAllocatedResources() const override;
     ResourceType getResourceType() const override;
 
-    virtual bool allocateResources(ResourceType type, int amount){return false;}
-    virtual void releaseResources(ResourceType type, int amount){}
+    void collectChildrenInto(std::vector<Component*>& out) const;
+
+    virtual bool allocateResources(ResourceType type, int amount) { return false; }
+    virtual void releaseResources(ResourceType type, int amount) {}
 
     void setResponding(bool);
-    bool isActive() const;
+    bool isActive() const override;
     void setActive(bool);
+
+    const std::vector<Component*>& getChildren() const { return children; }
+    virtual WorkIterator* createIterator();
 };
 
-#endif // COMPOSITE_H
+#endif

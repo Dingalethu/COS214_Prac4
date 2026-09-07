@@ -4,6 +4,7 @@
 
 #include "Composite.h"
 #include "ResourceType.h"
+#include "CompleteDfsIterator.h"
 
 class FireDepartment : public Composite {
 private:
@@ -16,17 +17,20 @@ public:
     void executeResponse() override;
     void print() const override;
     
-    // Resource management (inherited from Component)
     void increaseResources(int amount) override;
     int getAllocatedResources() const override;
     ResourceType getResourceType() const override;
 
-    // FireDepartment-specific methods
     void deployTruck();
     int getNumTrucks() const;
     void returnTruck();
     bool allocateResources(ResourceType type, int amount);
     void releaseResources(ResourceType type, int amount);
+
+    bool isActive() const override;
+
+    //Function for iTERATOR
+    WorkIterator* createIterator();
 };
 
 #endif // FIREDEPARTMENT_H

@@ -1,13 +1,22 @@
 
 #include "EmergencyTask.h"
+#include "EmergencyState.h"
+#include "AlertState.h"
 #include <iostream>
 
+
+EmergencyTask::~EmergencyTask(){
+    if(state){
+        delete state;
+    }
+}
 EmergencyTask::EmergencyTask(std::string EmergencyType, Composite* R_provider, ResourceType rt){
     emergencyType = EmergencyType;
-    state = nullptr;
+    state = new AlertState(); 
     resourceProvider = R_provider;
     allocatedResources = 0;
     resourceType = rt;
+    active = true;
 }
 
 
@@ -47,4 +56,40 @@ int EmergencyTask::getAllocatedResources() const{
 
 ResourceType EmergencyTask::getResourceType() const{
     return resourceType;
+}
+
+void EmergencyTask::print() const {
+    std::cout << "Emergency Task: " << emergencyType << std::endl;
+    std::cout << "  State: " << state->getStateName() << std::endl;
+    std::cout << "  Resources: " << allocatedResources << std::endl;
+    std::cout << "  Active: " << (active ? "Yes" : "No") << std::endl;
+}
+
+void EmergencyTask::setState(EmergencyState* newState) {
+    delete state;
+    state = newState;
+}
+
+bool EmergencyTask::isActive() const{
+    return active;
+}
+
+std::string EmergencyTask::getStateName() const{
+    if(state){
+        return state-> getStateName();
+    }else{
+        return "Unknown State";
+    }
+}
+
+
+std::string EmergencyTask::getName() const{
+    return emergencyType;
+}
+
+void EmergencyTask::increaseResources(int amount){
+    increaseResources(resourceType, amount);
+}
+
+void EmergencyTask::collectChildrenInto(std::vector<Component*>& out) const{
 }

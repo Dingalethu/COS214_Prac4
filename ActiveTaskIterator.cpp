@@ -1,5 +1,6 @@
 #include "ActiveTaskIterator.h"
 #include "Composite.h"
+#include "EmergencyTask.h"
 
 ActiveTaskIterator::ActiveTaskIterator(Composite* r) : root(r) {
     first();
@@ -23,7 +24,6 @@ void ActiveTaskIterator::findNextActiveLeaf(Component* node) {
         }
         return;
     }
-
     for (Component* child : kids) {
         findNextActiveLeaf(child);
     }

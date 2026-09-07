@@ -26,6 +26,8 @@ public:
     int getNumVehicles() const;
     bool allocateResources(ResourceType type, int amount);
     void releaseResources(ResourceType type, int amount);
+
+    bool isActive() const override;
 };
 
 #endif // POLICEDEPARTMENT_H

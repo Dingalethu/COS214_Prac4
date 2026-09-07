@@ -92,3 +92,8 @@ void PoliceDepartment::releaseResources(ResourceType type, int amount){
 
 PoliceDepartment::~PoliceDepartment(){}
 
+
+
+bool PoliceDepartment::isActive() const {
+    return Composite::isActive();
+}
