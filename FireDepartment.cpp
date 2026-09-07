@@ -1,6 +1,7 @@
 #include "FireDepartment.h"
 #include "ResourceType.h"
 #include <iostream>
+#include "CompleteDfsIterator.h" 
 
 FireDepartment::FireDepartment() : Composite("LAFD"){
     numTrucks = 10;
@@ -10,6 +11,7 @@ FireDepartment::~FireDepartment(){}
 
 
 void FireDepartment::executeResponse(){
+    Composite::executeResponse();
     deployTruck();
     deployTruck();
 }
@@ -23,10 +25,8 @@ void FireDepartment::print() const{
 
 void FireDepartment::increaseResources(int amount){
     std::cout << "Resources are being returned back to the LAFD department after an emergency response" << std::endl;
-    if(amount <= numTrucks){
-        for(int i = 0; i < amount; i++){
-            returnTruck();
-        }
+    for(int i = 0; i < amount; i++){
+        returnTruck();
     }  
 }
 
@@ -55,7 +55,9 @@ int FireDepartment::getNumTrucks() const{
 
 
 void FireDepartment::returnTruck(){
-    ++numTrucks;
+    if(numTrucks < 10) {
+        ++numTrucks;
+    }
 }
 
 
@@ -79,6 +81,17 @@ bool FireDepartment::allocateResources(ResourceType type, int amount){
 
 
 void FireDepartment::releaseResources(ResourceType type, int amount){
+    if(type == ResourceType::FireTruck) {
+        increaseResources(amount);
+    }
 }
 
 
+bool FireDepartment::isActive() const{
+    return Composite::isActive();
+}
+
+
+WorkIterator* FireDepartment::createIterator(){
+    return new CompleteDfsIterator(this);
+}

@@ -16,7 +16,7 @@ class Composite; // forward declaration avoids a circular include with Composite
 // modification policy for Task 3.
 class ActiveTaskIterator : public WorkIterator {
 public:
-    explicit ActiveTaskIterator(Composite* root);
+    ActiveTaskIterator(Composite* root);
     ~ActiveTaskIterator() override;
 
     void first() override;

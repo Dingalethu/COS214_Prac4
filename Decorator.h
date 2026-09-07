@@ -21,6 +21,17 @@ public:
     void increaseResources(int amount);
     int  getAllocatedResources() const;
     ResourceType getResourceType() const;
+    
+    void collectChildrenInto(std::vector<Component*>& out) const override;
+    bool isActive() const override;
+
+    // Exposes the wrapped component — allows callers to unwrap the decorator
+    // chain when they need to access the concrete EmergencyTask beneath.
+    Component* getComponent() const { return component; }
+
 };
 
 #endif // DECORATOR_H
+
+
+

@@ -7,6 +7,7 @@ PoliceDepartment::PoliceDepartment() : Composite("LAPD"){
 
 
 void PoliceDepartment::executeResponse(){
+    Composite::executeResponse();
     if(numVehicles >=5){
         for(int i = 0; i < 5; i++){
             deployVehicle();
@@ -87,8 +88,15 @@ void PoliceDepartment::print() const{
 
 
 void PoliceDepartment::releaseResources(ResourceType type, int amount){
-    // Must be implemented by the EmergencyTask
+    if(type == ResourceType::PoliceCar) {
+        increaseResources(amount);
+    }
 }
 
 PoliceDepartment::~PoliceDepartment(){}
 
+
+
+bool PoliceDepartment::isActive() const {
+    return Composite::isActive();
+}

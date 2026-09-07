@@ -12,7 +12,10 @@ class EmergencyTask : public Component{
         Composite* resourceProvider;
         int allocatedResources;
         ResourceType resourceType;
+        bool active;
+
     public:
+        ~EmergencyTask();
         EmergencyTask(std::string EmergencyType, Composite* R_provider, ResourceType);
         void increaseResources(ResourceType type, int amount);
         void executeResponse() override;
@@ -21,12 +24,18 @@ class EmergencyTask : public Component{
         ResourceType getResourceType() const;
         virtual void add(Component* component){}
         virtual void remove(Component* component){}
+        
+        virtual std::string getName() const;
+        virtual void print() const;
+        virtual void increaseResources(int amount);
+        void collectChildrenInto(std::vector<Component*>& out) const override;
 
+        // state Context Functions
+        void setState(EmergencyState* newState);
 
-    
-    virtual std::string getName() const{return "";}
-    virtual void print() const{}
-    virtual void increaseResources(int amount){}
+        bool isActive() const override;
+        std::string getStateName() const;
+        
 };
 
 

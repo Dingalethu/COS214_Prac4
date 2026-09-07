@@ -26,6 +26,8 @@ public:
     int getNumAmbulances() const;
     bool allocateResources(ResourceType type, int amount);
     void releaseResources(ResourceType type, int amount);
+
+    bool isActive() const override;
 };
 
 #endif // MEDICALDEPARTMENT_H

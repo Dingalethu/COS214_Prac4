@@ -1,4 +1,5 @@
 #include "Composite.h"
+#include "CompleteDfsIterator.h"
 #include <iostream>
 
 Composite::Composite(const std::string& name){
@@ -22,13 +23,11 @@ void Composite::add(Component* component){
 }
 
 
-void Composite::remove(Component* component){
-       if(!children.empty()){
-        for(Component* child : children){
-            if(child == component){
-                delete child;
-                child = nullptr;
-            }
+void Composite::remove(Component* component) {
+    for(auto it = children.begin(); it != children.end(); ++it){
+        if(*it == component){
+            children.erase(it);  
+            return;
         }
     }
 }
@@ -45,7 +44,6 @@ std::string Composite::getName()const{
 }
 
 
-// Composite.cpp - Update print() method
 void Composite::print() const{
     std::cout << "Composite: " << name << std::endl;
     std::cout << "Active: " << (active ? "Yes" : "No") << std::endl;
@@ -82,3 +80,13 @@ void Composite::setActive(bool isActive){
     active = isActive;
 }
 
+WorkIterator* Composite::createIterator() {
+    return new CompleteDfsIterator(this);
+}
+
+
+void Composite::collectChildrenInto(std::vector<Component*>& out) const {
+    for (Component* c : children) {
+        out.push_back(c);
+    }
+}

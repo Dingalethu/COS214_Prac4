@@ -8,10 +8,10 @@ MedicalDepartment::MedicalDepartment() : Composite("Cedars-Sinai Medical Center"
 MedicalDepartment::~MedicalDepartment(){}
 
 void MedicalDepartment::executeResponse(){
+    Composite::executeResponse();
     deployAmbulance();
 }
 
-// MedicalDepartment.cpp - Update print() method
 void MedicalDepartment::print() const{
     std::cout << "===================== MEDICAL RESPONSE =====================" << std::endl;
     std::cout << "The Cedars-Sinai Medical Center is responding to a medical alert" << std::endl;
@@ -27,10 +27,8 @@ std::string MedicalDepartment::getName() const{
 
 void MedicalDepartment::increaseResources(int amount){
     std::cout << "Resources are being returned back to the MEDICAL department after an emergency response" << std::endl;
-    if(amount <= numAmbulances){
-        for(int i = 0; i < amount; i++){
-            returnAmbulance();
-        }
+    for(int i = 0; i < amount; i++){
+        returnAmbulance();
     }
 }
 
@@ -52,10 +50,9 @@ void MedicalDepartment::deployAmbulance(){
 }
 
 void MedicalDepartment::returnAmbulance(){
-    if(numAmbulances != 15){
+    if(numAmbulances < 15) {
         numAmbulances++;
     }
-
 }
 
 int MedicalDepartment::getNumAmbulances() const{
@@ -75,5 +72,14 @@ bool MedicalDepartment::allocateResources(ResourceType type, int amount){
     return true;
 }
 
-void MedicalDepartment::releaseResources(ResourceType type, int amount){}
+void MedicalDepartment::releaseResources(ResourceType type, int amount){
+    if(type == ResourceType::Ambulance) {
+        increaseResources(amount);
+    }
+}
+
+
+bool MedicalDepartment::isActive() const{
+    return Composite::isActive();
+}
 
