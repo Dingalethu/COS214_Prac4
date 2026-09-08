@@ -1,6 +1,7 @@
 #include "FireDepartment.h"
 #include "ResourceType.h"
 #include <iostream>
+#include "CompleteDfsIterator.h" 
 
 FireDepartment::FireDepartment() : Composite("LAFD"){
     numTrucks = 10;
@@ -82,3 +83,11 @@ void FireDepartment::releaseResources(ResourceType type, int amount){
 }
 
 
+bool FireDepartment::isActive() const{
+    return Composite::isActive();
+}
+
+
+WorkIterator* FireDepartment::createIterator(){
+    return new CompleteDfsIterator(this);
+}

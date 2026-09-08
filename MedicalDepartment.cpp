@@ -11,7 +11,6 @@ void MedicalDepartment::executeResponse(){
     deployAmbulance();
 }
 
-// MedicalDepartment.cpp - Update print() method
 void MedicalDepartment::print() const{
     std::cout << "===================== MEDICAL RESPONSE =====================" << std::endl;
     std::cout << "The Cedars-Sinai Medical Center is responding to a medical alert" << std::endl;
@@ -76,4 +75,9 @@ bool MedicalDepartment::allocateResources(ResourceType type, int amount){
 }
 
 void MedicalDepartment::releaseResources(ResourceType type, int amount){}
+
+
+bool MedicalDepartment::isActive() const{
+    return Composite::isActive();
+}
 

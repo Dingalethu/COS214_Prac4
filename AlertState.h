@@ -6,7 +6,7 @@
 class AlertState : public EmergencyState {
 public:
     virtual ~AlertState() {}
-
+    
     void handleMobilization(EmergencyTask* task);
     void handleWorkExecution(EmergencyTask* task);
     void handleRecovery(EmergencyTask* task);

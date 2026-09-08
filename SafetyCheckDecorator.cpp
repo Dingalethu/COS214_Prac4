@@ -37,3 +37,6 @@ void SafetyCheckDecorator::executeResponse() {
               << component->getName() << std::endl;
     component->executeResponse();
 }
+
+
+
