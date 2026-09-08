@@ -1,0 +1,231 @@
+# TaskForge: Operation Nightfall
+
+COS 214 Practical 4 - TaskForge: Hierarchical Work Processing
+
+TaskForge is a C++11 emergency-response work-processing system. It models a city response operation as a hierarchy of sectors, departments, and emergency tasks. Tasks move through an Alert, Response, and Recovery lifecycle. The same hierarchy can be traversed completely or filtered to active leaf tasks, and runtime decorators add safety and priority responsibilities without changing the underlying task class.
+## Requirements and design summary
+
+The system manages emergency-response work for a city. A city contains sectors, sectors contain response departments, and departments contain emergency tasks. Treating a department and an individual task as `Component` objects allows client code to work with both groups and leaves through one abstraction.
+
+The initial runtime hierarchy is:
+
+```text
+CityGrid
+|- SectorAlpha
+|  `- LAFD
+|     `- FactoryFire
+`- SectorBeta
+   `- LAPD
+      `- StreetRiot
+```
+
+This provides three levels below the root boundary: sector, department, and task. It contains both nested groups and individual leaf objects.
+
+### GoF pattern mapping
+
+| Pattern | Participants in this system | Responsibility |
+|---|---|---|
+| Composite | `Component`, `Composite`, `FireDepartment`, `PoliceDepartment`, `MedicalDepartment`, `EmergencyTask` | Gives groups and individual tasks a common interface and supports recursive hierarchy processing. |
+| Iterator | `WorkIterator`, `CompleteDfsIterator`, `ActiveTaskIterator` | Separates traversal from the hierarchy representation. Complete DFS visits the structure; active traversal selects active leaves. |
+| State | `EmergencyState`, `AlertState`, `ResponseState`, `RecoveryState`, `EmergencyTask` | Changes task behaviour according to its lifecycle state and rejects invalid actions. |
+| Decorator | `Decorator`, `SafetyCheckDecorator`, `PriorityDecorator` | Adds safety validation and priority handling at runtime while preserving the `Component` interface. |
+
+## Source structure
+
+- `main.cpp` - interactive demonstration client and runtime scenarios.
+- `Component.*` - common Composite/Decorator abstraction.
+- `Composite.*` - recursive group implementation and child ownership.
+- `EmergencyTask.*` - emergency leaf and lifecycle context.
+- `*Department.*` - concrete response department composites and resource handling.
+- `WorkIterator.h` - iterator interface.
+- `CompleteDfsIterator.*` - complete depth-first traversal.
+- `ActiveTaskIterator.*` - active-leaf snapshot traversal.
+- `EmergencyState.h`, `AlertState.*`, `ResponseState.*`, `RecoveryState.*` - State pattern.
+- `Decorator.*`, `SafetyCheckDecorator.*`, `PriorityDecorator.*` - Decorator pattern.
+- `makefile` - C++11 build and run targets.
+- `Dockerfile` - Ubuntu environment containing g++, make, GDB, and Valgrind.
+- `TaskForge_UML1.PNG`, `TaskForge_UML2.PNG` - existing UML material. Add the complete diagram portfolio under `docs/` before submission.
+
+## Build and run on the host
+
+The current Makefile builds an executable named `emergency_system`.
+
+```bash
+make clean
+make
+./emergency_system
+```
+
+The interactive prompt accepts the following commands:
+
+```text
+help
+status
+active
+dispatch <task>
+execute <task>
+recover <task>
+escalate <task>
+secure <task>
+prioritize <task> <1-5>
+newtask <name> <alpha|beta> <fire|police|medical>
+exit
+```
+
+## Demonstration scenarios
+
+These commands demonstrate the important Task 3 collaborations in one believable emergency-response session. Type each command at the `>` prompt.
+
+### Scenario 1: dispatch an existing incident
+
+```text
+status
+active
+execute FactoryFire
+recover FactoryFire
+dispatch FactoryFire
+dispatch FactoryFire
+execute FactoryFire
+recover FactoryFire
+```
+
+This demonstrates complete recursive traversal with `CompleteDfsIterator`, filtered active-leaf traversal with an independent `ActiveTaskIterator`, invalid lifecycle actions before mobilisation, valid `Alert -> Response -> Recovery` transitions, and rejection of a second mobilisation after the task enters Response.
+
+### Scenario 2: runtime decoration and structural change
+
+```text
+escalate StreetRiot
+dispatch StreetRiot
+secure StreetRiot
+dispatch StreetRiot
+prioritize FactoryFire 1
+status
+newtask WarehouseFire alpha fire
+status
+active
+execute WarehouseFire
+dispatch WarehouseFire
+execute WarehouseFire
+recover WarehouseFire
+active
+exit
+```
+
+This demonstrates runtime safety decoration, a blocked dispatch until safety conditions are configured, runtime priority decoration, a structural change by adding `WarehouseFire`, fresh traversal after the change, and lifecycle processing of the new task.
+
+## Traversal modification policy
+
+The system deliberately uses two policies:
+
+- `CompleteDfsIterator` is live. It walks the hierarchy using its traversal stack and reads current children as it advances. Demonstrations should request a new traversal after structural changes.
+- `ActiveTaskIterator` is a snapshot. Its active-leaf queue is built when `first()` is called or when the iterator is constructed. Later additions or removals do not appear in that iterator. Create a new `ActiveTaskIterator` for a fresh snapshot.
+
+The CLI demonstrates this policy by running `status` and `active` again after `newtask`.
+
+## State behaviour
+
+Each `EmergencyTask` starts in `AlertState`.
+
+```text
+Alert --dispatch/mobilise--> Response --execute--> Recovery --recover--> resolved
+```
+
+Invalid actions are handled by the active state object rather than by a central state switch. For example, `execute` in Alert, `recover` in Alert or Response, and a second `dispatch` in Response or Recovery produce explanatory rejection messages.
+
+## Ownership and lifetime
+
+- `CityGrid` is the root owner created by `main.cpp`.
+- Each `Composite` owns its child `Component*` objects and deletes them in its destructor.
+- A `Decorator` owns and deletes the wrapped `Component`.
+- An `EmergencyTask` owns its current `EmergencyState` and replaces it during a transition.
+- Department pointers stored by tasks are non-owning references to departments owned by the hierarchy.
+- All polymorphic base classes must retain virtual destructors.
+
+Run Valgrind before submission to verify that this ownership policy produces no definitely-lost blocks.
+
+## Docker workflow
+
+Build the supplied environment from the repository root:
+
+```bash
+docker build -t taskforge-env .
+```
+
+Build inside Docker using the repository as `/app`:
+
+```bash
+docker run --rm -it \
+  -v "$(pwd):/app" \
+  taskforge-env \
+  bash -lc 'make clean && make'
+```
+
+Run the interactive demonstration inside Docker:
+
+```bash
+docker run --rm -it \
+  -v "$(pwd):/app" \
+  taskforge-env \
+  bash -lc './taskforge'
+```
+
+Use `./taskforge` 
+
+## GDB investigation
+
+The Makefile uses `-g`, so debug symbols are included. Start GDB inside Docker:
+
+```bash
+docker run --rm -it \
+  -v "$(pwd):/app" \
+  taskforge-env \
+  bash
+
+make clean && make
+gdb ./taskforge
+```
+
+Example investigation commands:
+
+```gdb
+break AlertState::handleMobilization
+run
+# At the program prompt, type: dispatch FactoryFire
+next
+print task
+continue
+quit
+```
+
+Replace this example with a screenshot or transcript showing an actual breakpoint, stepping, and relevant state inspection. The PDF must also describe one genuine bug, its symptom, cause, debugging evidence, and correction.
+
+## Valgrind investigation
+
+Run the final executable in Docker with:
+
+```bash
+docker run --rm -it \
+  -v "$(pwd):/app" \
+  taskforge-env \
+  bash -lc 'make clean && make && valgrind --leak-check=full --show-leak-kinds=all ./taskforge'
+```
+
+## Final submission checklist
+
+- [ ] C++11 build succeeds with `make`.
+- [ ] Final executable is named `taskforge`.
+- [ ] Docker build succeeds and provides g++, make, GDB, and Valgrind.
+- [ ] Program runs as one coherent emergency-response demonstration.
+- [ ] Hierarchy has at least three levels below the root and includes groups and leaves.
+- [ ] Complete traversal and a meaningfully different traversal both work.
+- [ ] Two traversal objects can exist independently.
+- [ ] Valid and invalid lifecycle transitions are demonstrated.
+- [ ] At least two decorators can be applied at runtime and stacked meaningfully.
+- [ ] Structural or behavioural runtime change is demonstrated.
+- [ ] Traversal modification policy is documented and implemented consistently.
+- [ ] Ownership is clear and all polymorphic bases have virtual destructors.
+- [ ] Valgrind reports no definitely-lost memory from project code.
+- [ ] `docs/` contains the complete UML and investigation portfolio.
+- [ ] GitHub history demonstrates work by all three team members.
+- [ ] Source archive and PDF are ready for submission.
+
